@@ -1,32 +1,39 @@
 <?php
 namespace Statical\SlimStatic;
 
+use Statical\SlimStatic\Route\Router;
+
 class SlimStatic
 {
     /**
     * Boots up SlimStatic by registering its proxies with Statical.
     *
-    * @param \Slim\Slim $slim
+    * @param \Slim\App $slim
     * @return \Statical\Manager
     */
-    public static function boot(\Slim\Slim $slim)
+    public static function boot(\Slim\App $slim)
     {
-        // set Slim application for syntactic-sugar proxies
+        # Set Slim application for syntactic-sugar proxies
         SlimSugar::$slim = $slim;
 
-        // create a new Manager
+        # Create a new Manager
         $manager = new \Statical\Manager();
 
-        // Add proxies that use the Slim instance
-        $aliases = array('App', 'Config', 'Route');
+        # Add proxies that use the Slim instance
+        $aliases = ['App'];
         static::addInstances($aliases, $manager, $slim);
 
-        // Add special-case Slim container instance
-        $aliases = array('Container');
-        static::addInstances($aliases, $manager, $slim->container);
+        # Add Slim container instance
+        $aliases = ['Container'];
+        static::addInstances($aliases, $manager, $slim->getContainer());
 
-        // Add services that are resolved out of the Slim container
-        static::addServices($manager, $slim);
+        # Add Router Sugar
+        $manager->addProxyInstance('Route', __NAMESPACE__.'\\Route', new Router($slim));
+
+        # Add services that are resolved out of the Slim container
+        if ($slim->getContainer()) {
+            static::addServices($manager, $slim->getContainer());
+        }
 
         return $manager;
     }
@@ -50,19 +57,20 @@ class SlimStatic
     * Adds services to the Statical Manager
     *
     * @param \Statical\Manager $manager
-    * @param \Slim\Slim $slim
+    * @param \Psr\Container\ContainerInterface $slim
     */
     static protected function addServices($manager, $slim)
     {
-        $services = array(
+        $services = [
             'Input' => 'request',
             'Log' => 'log',
             'Request' => 'request',
             'Response' => 'response',
             'View'     => 'view',
-        );
+            'Config' => 'config',
+        ];
 
-        $container = array($slim, '__get');
+        $container = [$slim, 'get'];
 
         foreach ($services as $alias => $id) {
             $proxy = __NAMESPACE__.'\\'.$alias;
