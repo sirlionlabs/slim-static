@@ -17,43 +17,75 @@ Slim PHP static proxy library.
 
 Support for Slim v4 coincides with this fork version 4. While a container is not required, this package relies on the container for many of the features to work properly. 
 
+
 ### Main updates for v4
+
 * `App::` resolves to the Slim Application
 * `Container::` resolves to `$slim->getContainer()` if one is set
 * ...and the following: 
 
-### Route Sugar, Router::class, RouteDecorator::class, and RouteGroupDecorator::class
+
+### New Route Sugar
 
 `Route::` resolves to a new `Router::class` for Laravel-like syntax. However, you must still include $request, $response... etc in the args as with Slim. The biggest update allows for methods, all utilizing Slim's underlying methods to achieve.
-- `middleware()` 
-- `group()` 
-- `prefix()`
+
+
+#### Http Verbs
+
+- `Route::get()`
+- `Route::post()`
+- `Route::put()`
+- `Route::patch()`
+- `Route::delete()`
+- `Route::options()`
+- `Route::any()`
+- `Route::match()`
+
+
+#### Chainable methods
+
+- `Route::middleware()`
+- `Route::group()` 
+- `Route::controller()->prefix(...)->group(...)`
 -  ...etc. 
 
 ```php
 Route::get('/', function($request, $response) {
-    $response->getBody()->write('Route facade');
+    $response->getBody()->write('Route facade is cool.');
     return $response;
+})->name('home');
+
+Route::controller(PostController::class)->prefix('/posts')->group(function() {
+    Route::get('', 'index')->name('posts.index');
+    Route::get('', 'show')->name('posts.show');
 });
+
+# Utilizing PhpRenderer 
+Route::view('/contact', $template, $data);
 ```
+
 
 ### RouteDecorator
 
-The route decorators are required for some additional sugar regarding named routes syntax now uses laravel-style `->name('products.index)` instead of slim's `->setName('products.index')`.
+The route decorators are required for some additional sugar regarding named routes syntax now uses laravel-style.
+
+- `name()` instead of slim's `->setName(')`
 
 Additionally, these decorators allow for pattern matching on routes:
 
-```php
-Route::get('/products/{slug}', function($request, $response) {
-    //...
-})->whereIn('status', ['active', 'inactive']);
-```
 - `where()`
 - `whereIn()`
 - `whereNumber()`
 - `whereAlpha()`
 - `whereSlug()`
 - `whereUuid()`
+
+```php
+Route::get('/products/{slug}', function($request, $response) {
+    //...
+})  ->whereIn('status', ['active', 'inactive'])
+    ->name('products.show');
+```
 
 
 ### Config Sugar & Settings Interface
@@ -62,19 +94,25 @@ A `SettingsInterface` and `Settings` class has been included based on the Slim4 
  * @see https://github.com/slimphp/Slim-Skeleton/blob/main/src/Application/Settings/SettingsInterface.php
  * @see https://discourse.slimframework.com/t/di-container-and-settings/5770/11
 
-In your container, define config as new Setting(). The `Config::get()` method accepts a string `$key` and accepts up to one level of dot notation `Config::get('app.name')`.
-
 ```php
-// Container defnitions 
-'config' => fn() => new Settings([
-    'app' => [
-        'name' => 'SlimStatic',
-    ],
-    'settings' => [
-        'log' => true,
-        'something' => 'else',
-    ]
-])
+# In your container definitions, define config as new Setting(). 
+$definitions = [
+    'config' => fn() => new Settings([
+        'app' => [
+            'name' => 'SlimStatic',
+            'someKey'  => 'someValue',
+        ],
+        'settings' => [
+            'log' => null,
+            'something' => 'else',
+        ],
+    ]),
+];
+
+Config::get();           # All config settings
+Config::get('app');      # Gets the App array 
+Config::get('app.name'); # Accepts up to one level of dot notation
+
 ```
 
 <hr>
