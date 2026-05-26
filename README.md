@@ -69,7 +69,7 @@ Route::view('/contact', $template, $data);
 
 The route decorators are required for some additional sugar regarding named routes syntax now uses laravel-style.
 
-- `name()` instead of slim's `->setName(')`
+- `name()` instead of slim's `setName()`
 
 Additionally, these decorators allow for pattern matching on routes:
 
@@ -146,6 +146,9 @@ Route::get('/hello-world', function()
     ));
 });
 
+# NEW version 4.0.0 using PhpRenderer
+Route::view('/hello', 'hello.php', ['title' => 'Hello World']);
+
 App::run();
 ```
 
@@ -156,9 +159,10 @@ This library is based on [Slim-Facades][slim-facades] from Miroslav Rigler, but 
 ## Usage
 Install via [composer][composer]
 
-```
-# NOT CURRENTLY AVAILABLE 
+```bash
+# NOT CURRENTLY AVAILABLE ON PACKAGIST
 composer require sirlionlabs/slim-static
+# Need updated instructions, clone repo...
 ```
 
 Create your Slim app and boot SlimStatic:
