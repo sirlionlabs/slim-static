@@ -205,18 +205,18 @@ Statical Alias          | Proxy
 
 <a name="App"></a>
 #### App
-Proxy to the Slim instance. Note that you cannot use the built-in resource locator statically,
-because `App::foo = 'bar'` is not a method call. Use the [Container](#Container) proxy instead.
+Proxy to the Slim instance.
 
 ```php
-App::expires('+1 week');
-App::halt();
+App::getInstance(); # \Slim\App
+App::getRouteCollector();
 ```
 
 <a name="Config"></a>
 #### Config
 ~~Sugar for Slim config, using the following methods:~~
-Now utilizes included Settings::class (SettingsInterface)
+
+Now utilizes included Settings::class (SettingsInterface). See [Version 4](#version-4) notes above for an example container definition.
 
 - `get($key)` - returns value of `$app->getContainer()->get('config')->get($key)`
     - Now supports two levels of dot notation when using `SettingsInterface::class`
@@ -233,7 +233,9 @@ App::config('log.enable', true);
 
 <a name="Container"></a>
 #### Container
-Proxy to the Slim container instance. Use this to access the built-in resource locator.
+~~Proxy to the Slim container instance. Use this to access the built-in resource locator.~~
+
+NOTE: Slim4 is bring-your-own-container. Proxy to `$slim->getContainer()`
 
 ```php
 # $app->foo = 'bar'
@@ -247,6 +249,7 @@ $bar = Container::get('foo');
 <a name="Input"></a>
 #### Input
 ~~Proxy to the Slim\Http\Request instance with an additional method:~~
+
 NOTE: Slim\Http\Request is not in Slim4
 
 - `file($name)` - returns `$_FILES[$name]`, or null if the file was not sent in the request
@@ -261,6 +264,7 @@ $password = Input::post('password');
 <a name="Log"></a>
 #### Log
 ~~Proxy to the Slim\Log instance.~~
+
 NOTE: Slim4 relies on defining your own logger in the container
 
 ```php
@@ -272,6 +276,7 @@ Log::debug('Degug info');
 <a name="Request"></a>
 #### Request
 ~~Proxy to the Slim\Http\Request instance.~~
+
 NOTE: Slim\Http\Request is not in Slim4
 
 ```php
@@ -281,7 +286,8 @@ $xhr = Request::isAjax();
 
 <a name="Response"></a>
 #### Response
-Proxy to the Slim\Http\Response instance.
+~~Proxy to the Slim\Http\Response instance.~~
+
 NOTE: Slim\Http\Response is not in Slim4
 
 ```php
@@ -293,6 +299,7 @@ Response::headers->set('Content-Type', 'application/json');
 <a name="Route"></a>
 #### Route
 ~~Sugar for the following Slim instance route-mapping methods:~~
+
 NOTE: Classic Route methods are commented out in favor of new `Router::class`. 
 A toggle may be implemented for developers to choose, but not currently available 
 
@@ -308,6 +315,7 @@ Route::urlFor('admin');
 <a name="View"></a>
 #### View
 ~~Proxy to the Slim\View instance~~
+
 NOTE: now calls to container definition `view` which you can define as Slim\PhpRenderer
 See also: `Route::view()`
 
