@@ -1,5 +1,5 @@
 {
-    "name": "statical/slim-static",
+    "name": "sirlionlabs/slim-static",
     "description": "Static proxy implementation for Slim framework",
     "keywords": ["slim", "statical", "facade", "static proxy"],
     "homepage": "http://github.com/johnstevenson/slim-static",
@@ -8,13 +8,21 @@
         {
             "name": "John Stevenson",
             "email": "john-stevenson@blueyonder.co.uk"
+        },
+        {
+            "name": "Sir Lion Labs"
         }
     ],
+    "version": "4.0.0",
 
     "require": {
-        "php": ">=5.3.0",
-        "slim/slim": "~2.3",
-        "statical/statical": "~1.0"
+        "php": ">=8.3.0",
+        "slim/slim": "4.*",
+        "statical/statical": "^1.1"
+    },
+
+    "suggest": {
+        "php-di/slim-bridge": "^3.4"
     },
 
     "autoload": {
