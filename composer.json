@@ -27,5 +27,10 @@
 
     "autoload": {
         "psr-4": {"Statical\\SlimStatic\\": "src/"}
+    },
+    
+    "require-dev": {
+        "php-di/slim-bridge": "^3.4",
+        "slim/psr7": "^1.8"
     }
 }

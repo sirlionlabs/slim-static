@@ -3,15 +3,15 @@ namespace Statical\SlimStatic;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\App;
 
 use Statical\SlimStatic\Route\RouteDecorator;
 use Statical\SlimStatic\Route\RouteGroupDecorator;
 use Statical\BaseProxy;
+use Statical\SlimStatic\App;
 
 /**
  * For developers who prefer to only use the classic Slim syntax, 
- * the commented code is still valid.
+ * the commented code is still valid when extending Slim\Sugar
  * 
  * @since 4.0.0 This now is a proxy for \Statical\SlimStatic\Route\Router::class
  * This has been converted to an extension of BaseProxy from SlimSugar
@@ -80,10 +80,10 @@ class Route extends BaseProxy
     // 	return call_user_func_array([static::$slim, 'any'], func_get_args());
     // }
 
-    // public static function urlFor(string $routeName, array $data = [], array $queryParams = [])
-    // {
-    //     return App::getRouteCollector()->getRouteParser()->urlFor($routeName, $data, $queryParams);
-    // }
+    public static function urlFor(string $routeName, array $data = [], array $queryParams = [])
+    {
+        return App::getRouteCollector()->getRouteParser()->urlFor($routeName, $data, $queryParams);
+    }
 
     // /**
     //  * A helper for routes that only return a view. Container definition 'view'
