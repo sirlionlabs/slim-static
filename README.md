@@ -1,15 +1,83 @@
-#SlimStatic
+# SlimStatic
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/johnstevenson/slim-static/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/johnstevenson/slim-static/?branch=master)
 [![Build Status](https://travis-ci.org/johnstevenson/slim-static.svg?branch=master)](https://travis-ci.org/johnstevenson/slim-static)
 
 Slim PHP static proxy library.
 ## Contents
+* [V4 Updats](#v4)
 * [About](#About)
 * [Usage](#Usage)
 * [API](#Api)
 * [Customizing](#Custom)
 * [License](#License)
+
+<a name="v4"></a>
+## Version 4
+
+Support for Slim v4 coincides with this fork version 4. While a container is not required, this package relies on the container for many of the features to work properly. 
+
+### Main updates for v4
+* `App::` resolves to the Slim Application
+* `Container::` resolves to `$slim->getContainer()` if one is set
+* ...and the following: 
+
+### Route Sugar, Router::class, RouteDecorator::class, and RouteGroupDecorator::class
+
+`Route::` resolves to a new `Router::class` for Laravel-like syntax. However, you must still include $request, $response... etc in the args as with Slim. The biggest update allows for methods, all utilizing Slim's underlying methods to achieve.
+- `middleware()` 
+- `group()` 
+- `prefix()`
+-  ...etc. 
+
+```php
+Route::get('/', function($request, $response) {
+    $response->getBody()->write('Route facade');
+    return $response;
+});
+```
+
+### RouteDecorator
+
+The route decorators are required for some additional sugar regarding named routes syntax now uses laravel-style `->name('products.index)` instead of slim's `->setName('products.index')`.
+
+Additionally, these decorators allow for pattern matching on routes:
+
+```php
+Route::get('/products/{slug}', function($request, $response) {
+    //...
+})->whereIn('status', ['active', 'inactive']);
+```
+- `where()`
+- `whereIn()`
+- `whereNumber()`
+- `whereAlpha()`
+- `whereSlug()`
+- `whereUuid()`
+
+
+### Config Sugar & Settings Interface
+
+A `SettingsInterface` and `Settings` class has been included based on the Slim4 Skeleton and a forum post from odan.
+ * @see https://github.com/slimphp/Slim-Skeleton/blob/main/src/Application/Settings/SettingsInterface.php
+ * @see https://discourse.slimframework.com/t/di-container-and-settings/5770/11
+
+In your container, define config as new Setting(). The `Config::get()` method accepts a string `$key` and accepts up to one level of dot notation `Config::get('app.name')`.
+
+```php
+// Container defnitions 
+'config' => fn() => new Settings([
+    'app' => [
+        'name' => 'SlimStatic',
+    ],
+    'settings' => [
+        'log' => true,
+        'something' => 'else',
+    ]
+])
+```
+
+<hr>
 
 <a name="About"></a>
 ## About
@@ -20,9 +88,9 @@ micro framework. Turn this:
 ```php
 $app->get('/hello-world', function()
 {
-	$app = Slim::getInstance();
+    $app = Slim::getInstance();
 
-	$app->view()->display('hello.html', array(
+    $app->view()->display('hello.html', array(
         'name' => $app->request()->get('name', 'world')
     ));
 });
@@ -35,7 +103,7 @@ into this:
 ```php
 Route::get('/hello-world', function()
 {
-	View::display('hello.html', array(
+    View::display('hello.html', array(
         'name' => Input::get('name', 'world')
     ));
 });
@@ -51,13 +119,14 @@ This library is based on [Slim-Facades][slim-facades] from Miroslav Rigler, but 
 Install via [composer][composer]
 
 ```
-composer require statical/slim-static
+# NOT CURRENTLY AVAILABLE 
+composer require sirlionlabs/slim-static
 ```
 
 Create your Slim app and boot SlimStatic:
 
 ```php
-use Slim\Slim;
+use Slim\App;
 use Statical\SlimStatic\SlimStatic;
 
 $app = new Slim();
